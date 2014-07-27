@@ -2,54 +2,49 @@
 using System.Collections;
 
 public class KartController : MonoBehaviour {
+
+	//public float turnSpeed = 20.0f;
+	// public float maxSqrVelocity = 11.0f;
+	//public float maxYrot = 90;
+	//public float minYrot = -90;
 	
-	public float speed = 5.0f;
-	public float turnSpeed = 20.0f;
-	public float maxSqrVelocity = 5.0f;
-	public float maxYrot = 90;
-	public float minYrot = -90;
+	Rigidbody _rigidbody;
+	float forwardAccel = 0.0f;
 
 	public Transform FrontWheels;
 	public Transform RearWheels;
 
-	Rigidbody _rigidbody;
-	float direction;
-	float turnRot;
-	float rotationZ = 0.0f;
-	public bool accelerating = false;
 	// Use this for initialization
 	void Start () {
 		_rigidbody = rigidbody;
+		//_rigidbody.centerOfMass = new Vector3 (0.0f, -2.5f, 0.0f);
 	}
 
-	void Update()
-	{		
-		direction = Input.GetAxis("Vertical");
-		Debug.Log (direction);
-		if (direction > 0.5f || direction < -0.5f)
-			accelerating = true;
-		else 
-			accelerating = false;
-
-		turnRot = Input.GetAxis ("Horizontal") * turnSpeed * Time.deltaTime;
-		turnRot = Mathf.Clamp (turnRot, minYrot, maxYrot);
-
-		//if(Input.GetAxis ("Horizontal") > 0.1f || Input.GetAxis ("Horizontal") < -0.1f)
-		//	rotationZ += Input.GetAxis ("Horizontal") * turnSpeed * Time.deltaTime;
+	public void Accelerate(float input, float speed, float maxSpeed){
+		float maxReverseSpeed = maxSpeed * 0.5f;
+		if (input > 0.0f)
+			if (forwardAccel < maxSpeed)
+				forwardAccel += speed;
+		if (input < 0.0f)
+			if (forwardAccel > maxReverseSpeed)
+				forwardAccel -= speed;
+		if (input == 0.0f) {
+			if (forwardAccel > 0)
+				forwardAccel -= speed;
+			else if (forwardAccel < 0)
+				forwardAccel += speed;
+		}
 		
-		//rotationZ = Mathf.Clamp (rotationZ, -90, 90);
-		//FrontWheels.transform.localEulerAngles = new Vector3(FrontWheels.transform.localEulerAngles.x,rotationZ,FrontWheels.transform.localEulerAngles.z);
-
-		//theWheel.rotation = Quaternion.RotateTowards(theWheel.rotation, Quaternion.LookRotation(theWheel.right, theWheel.up),turnRot);
-
-		//transform.Rotate(Vector3.up * turnRot);
+		Vector3 moveDirection = new Vector3 (0.0f, 0.0f, forwardAccel);
+		_rigidbody.AddRelativeForce(moveDirection, ForceMode.Acceleration);
 	}
 
-	void FixedUpdate () {
-
-		if (accelerating) {
-			_rigidbody.AddForce (transform.forward * (speed * direction), ForceMode.VelocityChange);
-			transform.rotation = Quaternion.RotateTowards (transform.rotation, Quaternion.LookRotation (transform.right, transform.up), turnRot); 
+	public void HorizontalTurnRotation(float input, float steerFactor){
+		Vector3 kartAngles = transform.eulerAngles;
+		float rotation = 0.0f;
+		if (Mathf.Abs(input) > 0.01f) {
+			rotation = kartAngles.y + ((forwardAccel * (steerFactor * Mathf.Sign (input))) * Time.deltaTime);
+			transform.eulerAngles = new Vector3 (0.0f, rotation, 0.0f);
 		}
 	}
 }
