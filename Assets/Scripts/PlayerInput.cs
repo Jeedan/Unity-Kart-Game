@@ -23,7 +23,6 @@ public class PlayerInput : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		kartController = gameObject.GetComponent<KartController>();
-
 	}
 
 	void Update(){
@@ -33,6 +32,6 @@ public class PlayerInput : MonoBehaviour {
 	// Update is called once per frame
 	void FixedUpdate() {
 		kartController.Accelerate (throttleInput, speed, maxForwardSpeed);
-		kartController.HorizontalTurnRotation(steeringInput,steerFactor);
+		kartController.Steering(steeringInput,steerFactor);
 	}
 }

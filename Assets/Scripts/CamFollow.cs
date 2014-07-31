@@ -13,12 +13,14 @@ public class CamFollow : MonoBehaviour {
 	void Start () {
 		offset.z = camDistance;
 		offset.y = camHeight;
+		offset.x = 0;
 		offset = target.transform.position - transform.position;
 	}
 
 	void LateUpdate () {
 		offset.z = camDistance;
 		offset.y = camHeight;
+		offset.x = 0;
 		float currentAngle = transform.eulerAngles.y;
 		float desiredAngle = target.transform.eulerAngles.y;
 		float angle = Mathf.LerpAngle(currentAngle, desiredAngle, Time.deltaTime * damping);

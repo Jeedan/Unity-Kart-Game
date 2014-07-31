@@ -199,8 +199,8 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 100004}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -40.5802765, y: .810518742, z: -7.00045013}
+  m_LocalRotation: {x: 0, y: .997086763, z: 0, w: .0762758479}
+  m_LocalPosition: {x: 46.5258331, y: 1.67068064, z: 51.862175}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 400010}
@@ -239,7 +239,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 100010}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -3.81469727e-05, y: -.0286660194, z: .416024208}
+  m_LocalPosition: {x: -3.81469727e-05, y: -.192131042, z: -.0249876976}
   m_LocalScale: {x: .872549534, y: .695689142, z: 1.576285}
   m_Children: []
   m_Father: {fileID: 400004}
@@ -443,7 +443,7 @@ Rigidbody:
   m_Mass: 1500
   m_Drag: 15
   m_AngularDrag: .0500000007
-  m_UseGravity: 1
+  m_UseGravity: 0
   m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 80
@@ -487,6 +487,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   FrontWheels: {fileID: 400010}
   RearWheels: {fileID: 400008}
+  isGrounded: 0
+  rayLength: .300000012
+  gravity: 50
 --- !u!114 &11400002
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -500,9 +503,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   throttleKey: Vertical
   steerKey: Horizontal
-  speed: 5
+  speed: 15
   steerFactor: .25
-  maxForwardSpeed: 300
+  maxForwardSpeed: 200
 --- !u!135 &13500000
 SphereCollider:
   m_ObjectHideFlags: 1
