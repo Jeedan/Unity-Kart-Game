@@ -14,13 +14,19 @@ public class KartController : MonoBehaviour
     private Rigidbody _rigidbody;
     private Transform _transform;
     private Vector3 moveDirection;
-    [SerializeField] float maxSqrVel = 88.0f;
-    [SerializeField] Transform RaycastTransform;
-    [SerializeField] Transform[] FrontWheels;
+    [SerializeField]
+    float maxSqrVel = 88.0f;
+    [SerializeField]
+    Transform RaycastTransform;
+    [SerializeField]
+    Transform[] FrontWheels;
 
-    [SerializeField] float rayLength = 5.0f;
-    [SerializeField] float gravity = 9.81f;
-    [SerializeField] float friction = 0.8f;
+    [SerializeField]
+    float rayLength = 5.0f;
+    [SerializeField]
+    float gravity = 9.81f;
+    [SerializeField]
+    float friction = 0.8f;
 
     // Use this for initialization
     void Start()
@@ -39,7 +45,7 @@ public class KartController : MonoBehaviour
         {
             isGrounded = true;
             float slopeAngle = Vector3.Dot(Vector3.up, rayHit.normal);
-            
+
             if (slopeAngle > 0.7f && slopeAngle < 1.0f)
             {
                 // if we are moving up a slope
@@ -48,14 +54,14 @@ public class KartController : MonoBehaviour
                 // so that our car looks like it is moving up a ramp, which it is
                 if (input > 0.01)
                     _rigidbody.velocity += _transform.forward * 2.0f;
-                
+
                 Vector3 a = _transform.eulerAngles;
                 Vector3 b = rayHit.transform.eulerAngles;
                 _transform.eulerAngles = new Vector3(Mathf.LerpAngle(a.x, b.x, 5f * Time.deltaTime), _transform.eulerAngles.y, _transform.eulerAngles.z);
 
                 // we seem to loose velocity when moving up a ramp, so we add a bit of speed
                 // this is not realistic but should be fine for an arcade racer
-             
+
             }
             else
             {
@@ -96,6 +102,7 @@ public class KartController : MonoBehaviour
                 if (forwardAccel > maxReverseSpeed)
                     forwardAccel -= speed;
 
+            // moveDirection = new Vector3(0.0f, 0.0f, forwardAccel);
             moveDirection = new Vector3(0.0f, 0.0f, forwardAccel);
             _rigidbody.AddRelativeForce(moveDirection, ForceMode.Acceleration);
         }
@@ -111,7 +118,33 @@ public class KartController : MonoBehaviour
             forwardAccel *= friction;
         }
 
-        Debug.Log(_rigidbody.velocity.sqrMagnitude);
+        // Debug.Log(_rigidbody.velocity.sqrMagnitude);
+        // limit the velocity so we don't have errors
+        if (_rigidbody.velocity.sqrMagnitude > maxSqrVel)
+            _rigidbody.velocity *= 0.99f;
+    }
+
+    public void Accelerate(Vector3 direction, float speed, float maxSpeed)
+    {
+        float maxReverseSpeed = -maxSpeed * 0.5f;
+        CheckIfGrounded(0.1f);
+        if (isGrounded)
+        {
+            if (forwardAccel < maxSpeed)
+                forwardAccel += speed;
+
+            // moveDirection = new Vector3(0.0f, 0.0f, forwardAccel);
+            _rigidbody.AddRelativeForce(direction * forwardAccel * Time.deltaTime, ForceMode.VelocityChange);
+        }
+        else
+        {
+            _rigidbody.AddRelativeForce(direction * forwardAccel + (_transform.up * -gravity) * Time.deltaTime, ForceMode.VelocityChange);
+        }
+
+        // friction
+        forwardAccel *= friction;
+
+        // Debug.Log(_rigidbody.velocity.sqrMagnitude);
         // limit the velocity so we don't have errors
         if (_rigidbody.velocity.sqrMagnitude > maxSqrVel)
             _rigidbody.velocity *= 0.99f;
@@ -120,7 +153,7 @@ public class KartController : MonoBehaviour
     public void Steering(float input, float steerFactor)
     {
         Vector3 kartAngles = _transform.eulerAngles;
-        
+
         float rotation = 0.0f;
         float rot2 = 0.0f;
         float rot3 = 0.0f;
@@ -128,8 +161,8 @@ public class KartController : MonoBehaviour
         {
             rotation = kartAngles.y + ((forwardAccel * (steerFactor * Mathf.Sign(input))) * Time.deltaTime);
             _transform.eulerAngles = new Vector3(_transform.eulerAngles.x, rotation, _transform.eulerAngles.z);
-           for (int i = 0; i < FrontWheels.Length-1; i++)
-			{
+            for (int i = 0; i < FrontWheels.Length - 1; i++)
+            {
                 Vector3 wheelAngle1 = FrontWheels[i].localEulerAngles;
                 rot2 = wheelAngle1.y + ((forwardAccel * (steerFactor * Mathf.Sign(input))) * Time.deltaTime);
                 FrontWheels[0].localEulerAngles = new Vector3(0.0f, rot2, 0.0f);
@@ -137,9 +170,9 @@ public class KartController : MonoBehaviour
 
                 float clampY = Mathf.Clamp(FrontWheels[0].localEulerAngles.y, 160, 200);
                 float clampY2 = Mathf.Clamp(FrontWheels[1].localEulerAngles.y, 160, 200);
-                FrontWheels[0].localEulerAngles = new Vector3(0.0f, clampY, 0.0f); 
-                FrontWheels[1].localEulerAngles = new Vector3(0.0f, clampY2, 0.0f); 
-			}
+                FrontWheels[0].localEulerAngles = new Vector3(0.0f, clampY, 0.0f);
+                FrontWheels[1].localEulerAngles = new Vector3(0.0f, clampY2, 0.0f);
+            }
         }
     }
 
